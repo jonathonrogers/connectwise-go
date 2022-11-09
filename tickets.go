@@ -1,5 +1,6 @@
 package connectwise
 
+// Tickets encapsulates a Tickets object returned from the Manage API
 type Tickets []struct {
 	ID         int    `json:"id"`
 	Summary    string `json:"summary"`

@@ -1,5 +1,6 @@
 package connectwise
 
+// TicketNotes encapsulates a TicketNotes object
 type TicketNotes []struct {
 	ID                    int    `json:"id"`
 	TicketID              int    `json:"ticketId"`
