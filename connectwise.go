@@ -35,6 +35,9 @@ type CwClient struct {
 	CompanyID  string
 	PublicKey  string
 	PrivateKey string
+	client     *http.Client
+
+	TicketsClient *TicketsClient
 }
 
 // CwOption makes up one (of multiple) options that we can pass to function
@@ -142,7 +145,7 @@ func (c CwClient) GetAll(path string, options ...CwOption) (jsonPages []string, 
 func (c CwClient) Get(path string, options ...CwOption) (jsonData []byte, err error) {
 	baseURL := fmt.Sprintf("https://%s/%sapis/3.0", c.APIVersion.SiteURL, c.APIVersion.Codebase)
 	url := fmt.Sprintf("%s/%s", baseURL, path)
-	client := &http.Client{}
+	//client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return jsonData, err
@@ -165,7 +168,7 @@ func (c CwClient) Get(path string, options ...CwOption) (jsonData []byte, err er
 		req.URL.RawQuery = q.Encode()
 	}
 
-	resp, err := client.Do(req)
+	resp, err := c.client.Do(req) //client.Do(req)
 	if err != nil {
 		return jsonData, err
 	}
@@ -194,7 +197,9 @@ func NewCwClient(site string, clientID string, company string, publicKey string,
 		CompanyID:  company,
 		PublicKey:  publicKey,
 		PrivateKey: privateKey,
+		client:     &http.Client{},
 	}
+	cwclient.TicketsClient = &TicketsClient{client: &cwclient, path: "/service/tickets"}
 	return
 }
 

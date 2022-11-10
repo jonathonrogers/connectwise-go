@@ -44,7 +44,8 @@ func main() {
 
 	//getTickets()
 
-	test, _ := connectwise.GetTicketByID(&client, 600108)
+	//test, _ := connectwise.GetTicketByID(&client, 600108)
+	test, _ := client.TicketsClient.GetTicketByID(600108)
 	// what is ticket 601012?
 	//fmt.Printf("%v\n\n", test)
 	testNotes, _ := test.GetNotes(&client)

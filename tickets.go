@@ -1,10 +1,16 @@
 package connectwise
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 )
+
+type TicketsClient struct {
+	client *CwClient
+	path   string
+}
 
 // Tickets holds an array of Ticket structs
 type Tickets []Ticket
@@ -296,19 +302,43 @@ func (ticket Ticket) String() string {
 	return strTicket
 }
 
-const path = "/service/tickets"
-
-func GetTicketByID(client *CwClient, id int) (t Ticket, err error) {
-	data, err := client.Get(
-		path,
-		CwOption{Key: "conditions", Value: fmt.Sprintf("id=%d", id)},
-	)
-	tickets := decode(data)
-	return tickets[0], err
+func (ts *TicketsClient) GetTickets(ctx context.Context, options ...CwOption) (Tickets, error) {
+	data, err := ts.client.Get(ts.path, options...)
+	if err != nil {
+		return Tickets{}, err
+	}
+	var tickets Tickets
+	err = json.Unmarshal(data, &tickets)
+	if err != nil {
+		return Tickets{}, err
+	}
+	return tickets, nil
 }
 
+func (ts *TicketsClient) GetTicketByID(id int) (t Ticket, err error) {
+	path := fmt.Sprintf("%s/%d", ts.path, id)
+	data, err := ts.client.Get(
+		path,
+		// CwOption{Key: "conditions", Value: fmt.Sprintf("id=%d", id)},
+	)
+	if err != nil {
+		return Ticket{}, err
+	}
+	//tickets := decode(data)
+	//return tickets[0], err
+	var ticket Ticket
+	err = json.Unmarshal(data, &ticket)
+	if err != nil {
+		return Ticket{}, err
+	}
+	return ticket, nil
+}
+
+//func (client *CwClient) GetTickets()
+/*
 func decode(data []byte) Tickets {
 	var tickets Tickets
 	json.Unmarshal(data, &tickets)
 	return tickets
 }
+*/

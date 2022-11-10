@@ -61,6 +61,8 @@ func (notes TicketNotes) String() string {
 	return strNotes
 }
 
+//func (ts *TicketsClient) GetTicketNotes()
+
 func (t *Ticket) GetNotes(client *CwClient) (notes TicketNotes, err error) {
 	data, err := client.Get(
 		fmt.Sprintf("/service/tickets/%d/notes", t.ID),
